@@ -41,16 +41,16 @@ function main() {
                 for (let i = 0; i < instanceText.length; i++) {
                     yield figma.loadFontAsync(instanceText[i].fontName);
                     instanceText[i].characters = text[i].characters;
-                    console.log();
+                    // console.log()
                 }
                 thisInstance.y = node.y;
                 thisInstance.x = node.x;
                 // thisInstance.children[0].characters = text
-                console.log(thisInstance.children);
+                // console.log(thisInstance.children)
                 node.parent.appendChild(thisInstance);
                 node.remove();
             }
-            console.log(instance);
+            // console.log(instance)
         }
     });
 }
