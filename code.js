@@ -10,14 +10,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         let instance = null;
+        const all = figma.currentPage.selection;
         for (const node of figma.currentPage.selection) {
             if (node.type === 'INSTANCE') {
                 instance = node;
             }
-            else if (node.type === 'FRAME') {
+            if (node.type === 'COMPONENT') {
+                instance = node.createInstance();
+            }
+        }
+        for (const node of figma.currentPage.selection) {
+            if (instance === null) {
+                figma.notify("Please select one instance or one component and multiple frames");
+                figma.closePlugin();
+            }
+            if (node.type === 'FRAME') {
                 let thisInstance = instance.clone();
-                const text = node.findAll(n => n.type === "TEXT");
-                const instanceText = thisInstance.findAll(n => n.type === "TEXT");
+                // const text = node.findAll(n => n.type === "TEXT")
+                const text = node.findAllWithCriteria({
+                    types: ['TEXT']
+                });
+                const instanceText = thisInstance.findAllWithCriteria({
+                    types: ['TEXT']
+                });
+                // const instanceText = thisInstance.findAll(n => n.type === "TEXT")
+                if (text.length != instanceText.length) {
+                    figma.notify("Instance/Compenent and frame doesn't have the same layout!");
+                    figma.closePlugin();
+                }
                 for (let i = 0; i < instanceText.length; i++) {
                     yield figma.loadFontAsync(instanceText[i].fontName);
                     instanceText[i].characters = text[i].characters;
