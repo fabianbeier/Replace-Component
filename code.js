@@ -44,6 +44,21 @@ function main() {
                     yield figma.loadFontAsync(instanceText[i].fontName);
                     instanceText[i].characters = text[i].characters;
                 }
+                // Copy over Image
+                const instanceImage = thisInstance.findAllWithCriteria({
+                    types: ['RECTANGLE']
+                });
+                const image = thisInstance.findAllWithCriteria({
+                    types: ['RECTANGLE']
+                });
+                if (image.length != instanceImage.length) {
+                    figma.notify("Instance/Compenent and frame doesn't have the same layout!");
+                    figma.closePlugin();
+                }
+                for (let i = 0; i < instanceImage.length; i++) {
+                    instanceImage[i].fills = image[i].fills;
+                }
+                console.log(instanceImage);
                 thisInstance.y = node.y;
                 thisInstance.x = node.x;
                 // thisInstance.children[0].characters = text
