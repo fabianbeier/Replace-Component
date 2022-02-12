@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         let instance = null;
-        const all = figma.currentPage.selection;
+        let all = null;
         for (const node of figma.currentPage.selection) {
             if (node.type === 'INSTANCE') {
                 instance = node;
@@ -18,6 +18,8 @@ function main() {
             if (node.type === 'COMPONENT') {
                 instance = node.createInstance();
             }
+            if (node.type === 'FRAME')
+                all = node.parent.children;
         }
         for (const node of figma.currentPage.selection) {
             if (instance === null) {
@@ -41,13 +43,12 @@ function main() {
                 for (let i = 0; i < instanceText.length; i++) {
                     yield figma.loadFontAsync(instanceText[i].fontName);
                     instanceText[i].characters = text[i].characters;
-                    // console.log()
                 }
                 thisInstance.y = node.y;
                 thisInstance.x = node.x;
                 // thisInstance.children[0].characters = text
                 // console.log(thisInstance.children)
-                node.parent.appendChild(thisInstance);
+                node.parent.insertChild(all.indexOf(node), thisInstance);
                 node.remove();
             }
             // console.log(instance)

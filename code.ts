@@ -1,6 +1,6 @@
 async function main() {
-  let instance = null
-  const all = figma.currentPage.selection;
+  let instance = null;
+  let all = null;
 
   for (const node of figma.currentPage.selection) {
     if (node.type === 'INSTANCE') {
@@ -9,6 +9,8 @@ async function main() {
     if (node.type === 'COMPONENT') {
       instance = node.createInstance()
     }
+    if (node.type === 'FRAME')
+    all = node.parent.children
   }
 
   for (const node of figma.currentPage.selection) {
@@ -33,14 +35,14 @@ async function main() {
       for (let i = 0; i < instanceText.length; i++) {
         await figma.loadFontAsync(instanceText[i].fontName)
         instanceText[i].characters = text[i].characters
-        // console.log()
+       
       }
 
       thisInstance.y = node.y
       thisInstance.x = node.x
       // thisInstance.children[0].characters = text
       // console.log(thisInstance.children)
-      node.parent.appendChild(thisInstance)
+      node.parent.insertChild(all.indexOf(node), thisInstance)
       node.remove()
 
     }
@@ -48,8 +50,6 @@ async function main() {
 
   }
 }
-
-
 
 main().then(() => {
   figma.closePlugin()
