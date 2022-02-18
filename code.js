@@ -7,6 +7,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+function clone(val) {
+    const type = typeof val;
+    if (val === null) {
+        return null;
+    }
+    else if (type === 'undefined' || type === 'number' ||
+        type === 'string' || type === 'boolean') {
+        return val;
+    }
+    else if (type === 'object') {
+        if (val instanceof Array) {
+            return val.map(x => clone(x));
+        }
+        else if (val instanceof Uint8Array) {
+            return new Uint8Array(val);
+        }
+        else {
+            let o = {};
+            for (const key in val) {
+                o[key] = clone(val[key]);
+            }
+            return o;
+        }
+    }
+    throw 'unknown';
+}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         let instance = null;
@@ -46,19 +72,26 @@ function main() {
                 }
                 // Copy over Image
                 const instanceImage = thisInstance.findAllWithCriteria({
-                    types: ['RECTANGLE']
+                    types: ['RECTANGLE', 'FRAME']
                 });
-                const image = thisInstance.findAllWithCriteria({
-                    types: ['RECTANGLE']
+                const image = node.findAllWithCriteria({
+                    types: ['RECTANGLE', 'FRAME']
                 });
                 if (image.length != instanceImage.length) {
                     figma.notify("Instance/Compenent and frame doesn't have the same layout!");
                     figma.closePlugin();
                 }
-                for (let i = 0; i < instanceImage.length; i++) {
-                    instanceImage[i].fills = image[i].fills;
+                for (let i = 0; i < image.length; i++) {
+                    let cloned = yield clone(image[i].fills);
+                    // await console.log(cloned[0])
+                    // await console.log(instanceImage[i].fills)
+                    if (cloned.length > 0) {
+                        if (cloned[0].imageHash != null)
+                            instanceImage[i].fills = yield cloned;
+                    }
+                    else {
+                    }
                 }
-                console.log(instanceImage);
                 thisInstance.y = node.y;
                 thisInstance.x = node.x;
                 // thisInstance.children[0].characters = text
