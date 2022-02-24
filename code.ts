@@ -7,7 +7,7 @@ async function main() {
       instance = node
     }
     if (node.type === 'COMPONENT') {
-      instance = node.createInstance()
+      instance = node
     }
     if (node.type === 'FRAME')
     all = node.parent.children
@@ -18,8 +18,15 @@ async function main() {
       figma.notify("Please select one instance or one component and multiple frames")
       figma.closePlugin()
     }
+    if (node.type === 'TEXT') {
+      figma.notify("Please wrap single textframes in a frame")
+      figma.closePlugin()
+    }
     if (node.type === 'FRAME') {
       let thisInstance = instance.clone()
+      if (thisInstance.type === 'COMPONENT'){
+        thisInstance = thisInstance.createInstance()
+      }
       // const text = node.findAll(n => n.type === "TEXT")
       const text = node.findAllWithCriteria({
         types: ['TEXT']
